@@ -108,7 +108,7 @@ def main():
     overview.append(" | ", style="dim")
     overview.append(f"{trades_per_sec:.1f}/s", style="bold white")
 
-    console.print(Panel(overview, title="[bold yellow]ORDER FLOW OVERVIEW[/]", border_style="yellow", box=box.ROUNDED, padding=(0, 1)))
+    console.print(Panel(overview, title="[bold yellow]ORDER FLOW OVERVIEW[/]  [dim cyan]GET https://api.moondev.com/api/orderflow.json[/dim cyan]", border_style="yellow", box=box.ROUNDED, padding=(0, 1)))
 
     # TIMEFRAME TABLE
     windows = orderflow.get('windows', {})

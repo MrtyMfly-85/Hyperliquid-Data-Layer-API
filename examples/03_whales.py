@@ -57,7 +57,7 @@ def create_stats_panel(whale_count):
     stats_content = f"🐋 Total Tracked Whales: [bold yellow]{whale_count:,}[/bold yellow] | Verified $25k+ traders on Hyperliquid"
     return Panel(
         stats_content,
-        title="[bold green]📊 Statistics[/bold green]",
+        title="[bold green]📊 Statistics[/bold green]  [dim cyan]GET https://api.moondev.com/api/whale_addresses.txt[/dim cyan]",
         border_style="green",
         padding=(0, 1)
     )
@@ -168,7 +168,7 @@ def main():
     console.print(create_trades_table(trades))
     # Summary - Moon Dev
     summary = f"🐋 [cyan]{whale_count:,}[/cyan] whales | 💵 [yellow]{len(trades)}[/yellow] trades | 📊 [green]Live[/green] | 🌙 [magenta]Watch for big moves![/magenta]"
-    console.print(Panel(summary, title="[bold cyan]Summary[/bold cyan]", border_style="cyan", padding=(0, 1)))
+    console.print(Panel(summary, title="[bold cyan]Summary[/bold cyan]  [dim cyan]GET https://api.moondev.com/api/whales.json[/dim cyan]", border_style="cyan", padding=(0, 1)))
     console.print(create_footer())
 
 

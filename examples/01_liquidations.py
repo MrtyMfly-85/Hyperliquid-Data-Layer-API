@@ -70,7 +70,7 @@ def create_progress_bar(value, total, color="cyan"):
 # ==================== TIMEFRAME LIQUIDATIONS TABLE ====================
 def display_timeframe_liquidations(api):
     """Display liquidations across different timeframes"""
-    console.print(Panel("💥 [bold yellow]LIQUIDATION OVERVIEW BY TIMEFRAME[/bold yellow] 💥", border_style="yellow", padding=(0, 1)))
+    console.print(Panel("💥 [bold yellow]LIQUIDATION OVERVIEW BY TIMEFRAME[/bold yellow]  [dim cyan]GET https://api.moondev.com/api/liquidations/{timeframe}.json[/dim cyan]", border_style="yellow", padding=(0, 1)))
     table = Table(box=box.DOUBLE_EDGE, border_style="cyan", header_style="bold magenta", padding=(0, 1))
     table.add_column("⏰ Timeframe", style="cyan", justify="center", width=12)
     table.add_column("💥 Total Count", style="white", justify="right", width=14)
@@ -105,7 +105,7 @@ def display_timeframe_liquidations(api):
 # ==================== LIQUIDATION STATS ====================
 def display_liquidation_stats(api):
     """Display aggregated liquidation statistics"""
-    console.print(Panel("📊 [bold cyan]AGGREGATED LIQUIDATION STATISTICS (24H)[/bold cyan] 📊", border_style="cyan", padding=(0, 1)))
+    console.print(Panel("📊 [bold cyan]AGGREGATED LIQUIDATION STATISTICS (24H)[/bold cyan]  [dim cyan]GET https://api.moondev.com/api/liquidations/stats.json[/dim cyan]", border_style="cyan", padding=(0, 1)))
     try:
         stats = api.get_liquidation_stats()
         if isinstance(stats, dict):
@@ -145,7 +145,7 @@ def display_liquidation_stats(api):
 # ==================== TOP LIQUIDATIONS ====================
 def display_top_liquidations(api):
     """Display top 10 largest liquidations from stats endpoint"""
-    console.print(Panel("🔥 [bold red]TOP 10 LARGEST LIQUIDATIONS (24H)[/bold red] 🔥", border_style="red", padding=(0, 1)))
+    console.print(Panel("🔥 [bold red]TOP 10 LARGEST LIQUIDATIONS (24H)[/bold red]  [dim cyan]GET https://api.moondev.com/api/liquidations/stats.json[/dim cyan]", border_style="red", padding=(0, 1)))
     try:
         stats = api.get_liquidation_stats()
         if isinstance(stats, dict):
@@ -192,7 +192,7 @@ def display_top_liquidations(api):
 # ==================== PER-COIN BREAKDOWN ====================
 def display_coin_breakdown(api):
     """Display liquidations broken down by coin using stats endpoint"""
-    console.print(Panel("🪙 [bold magenta]LIQUIDATIONS BY COIN (24H)[/bold magenta] 🪙", border_style="magenta", padding=(0, 1)))
+    console.print(Panel("🪙 [bold magenta]LIQUIDATIONS BY COIN (24H)[/bold magenta]  [dim cyan]GET https://api.moondev.com/api/liquidations/stats.json[/dim cyan]", border_style="magenta", padding=(0, 1)))
     try:
         stats = api.get_liquidation_stats()
         if isinstance(stats, dict):

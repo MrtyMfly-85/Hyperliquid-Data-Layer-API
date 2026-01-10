@@ -67,7 +67,8 @@ This data layer gives you access to everything Wall Street kept hidden:
 |-----------------|----------------|
 | **Liquidations** | See when positions are about to get wiped out - in real-time |
 | **Multi-Exchange Liqs** | Combined liquidations from Hyperliquid, Binance, Bybit, OKX |
-| **Whale Positions** | Track what the big money is doing ($200k+ positions) |
+| **Whale Positions** | Track positions for any of 148 symbols (BTC: $1.9B, ETH: $2.7B, HYPE: $528M) |
+| **Buyer Tracking** | $5k+ buyers on HYPE/SOL/XRP/ETH - accumulation signals |
 | **Smart Money Rankings** | Top 100 profitable traders vs Bottom 100 |
 | **Trading Signals** | Know when smart money is buying or selling |
 | **Any Wallet's Positions** | Look up any Hyperliquid address and see their full portfolio |
@@ -76,6 +77,7 @@ This data layer gives you access to everything Wall Street kept hidden:
 | **Order Flow** | Buy pressure vs sell pressure, cumulative delta |
 | **Live Prices** | Real-time tick data for all major coins |
 | **Blockchain Events** | Transfers, swaps, deposits - as they happen |
+| **All Depositors** | Canonical list of every address that ever bridged to Hyperliquid |
 
 This is the data that used to cost hedge funds millions of dollars. Now it's accessible to anyone with an API key.
 
@@ -99,10 +101,12 @@ MOONDEV_API_KEY=your_api_key_here
 
 ### Step 4: Run Any Example
 ```bash
-python examples/01_liquidations.py      # See real-time liquidations
-python examples/09_smart_money.py       # Track smart money
-python examples/12_hlp_positions.py     # See HLP's $210M positions
+python examples/01_liquidations.py        # See real-time liquidations
+python examples/09_smart_money.py         # Track smart money
+python examples/12_hlp_positions.py       # See HLP's $210M positions
 python examples/14_multi_liquidations.py  # All exchanges: Hyperliquid, Binance, Bybit, OKX
+python examples/15_buyers.py              # $5k+ buyers on HYPE/SOL/XRP/ETH
+python examples/16_depositors.py          # All Hyperliquid depositors
 ```
 
 That's it. You're now seeing what Wall Street sees.
@@ -116,7 +120,7 @@ Every example is a standalone Python script with beautiful terminal output. Run 
 | File | What It Shows |
 |------|---------------|
 | `01_liquidations.py` | Real-time liquidation heatmaps, top liqs, long/short breakdowns |
-| `02_positions.py` | Whale positions near liquidation, risk analysis |
+| `02_positions.py` | Whale positions for any symbol (148 symbols! Use: `02_positions.py BTC`) |
 | `03_whales.py` | Whale addresses, recent trades, smart money moves |
 | `04_events.py` | Live blockchain events, transfers, swaps, deposits |
 | `05_contracts.py` | High-value contracts, activity tracking |
@@ -129,6 +133,8 @@ Every example is a standalone Python script with beautiful terminal output. Run 
 | `12_hlp_positions.py` | All 7 HLP strategies, trades, liquidators, deltas |
 | `13_binance_liquidations.py` | Binance Futures liquidations for comparison |
 | `14_multi_liquidations.py` | Combined liqs from Hyperliquid, Binance, Bybit, OKX |
+| `15_buyers.py` | $5k+ buyers on HYPE/SOL/XRP/ETH (buyers only - accumulation signals!) |
+| `16_depositors.py` | All Hyperliquid depositors - canonical list of bridged addresses |
 
 See the [examples/README.md](examples/README.md) for the API reference, or visit **https://moondev.com/docs** for the full documentation.
 

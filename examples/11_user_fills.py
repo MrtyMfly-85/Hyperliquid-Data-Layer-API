@@ -239,7 +239,11 @@ def display_summary_panels(stats, address, total_available):
 
 def display_coin_breakdown(stats):
     """Display breakdown by coin"""
-    console.print(Panel("[bold magenta]COIN BREAKDOWN[/bold magenta]", border_style="magenta", padding=(0, 1)))
+    console.print(Panel(
+        "📊 [bold white]COIN BREAKDOWN[/bold white]  [dim cyan]GET https://api.moondev.com/api/user/{address}/fills[/dim cyan]",
+        border_style="magenta",
+        padding=(0, 1)
+    ))
 
     table = Table(box=box.ROUNDED, border_style="magenta", header_style="bold cyan", padding=(0, 1))
     table.add_column("Coin", style="bold white", justify="center", width=10)
@@ -279,7 +283,11 @@ def display_coin_breakdown(stats):
 
 def display_direction_breakdown(stats):
     """Display breakdown by trade direction"""
-    console.print(Panel("[bold yellow]TRADE DIRECTION BREAKDOWN[/bold yellow]", border_style="yellow", padding=(0, 1)))
+    console.print(Panel(
+        "📊 [bold white]TRADE DIRECTION BREAKDOWN[/bold white]  [dim cyan]GET https://api.moondev.com/api/user/{address}/fills[/dim cyan]",
+        border_style="yellow",
+        padding=(0, 1)
+    ))
 
     table = Table(box=box.SIMPLE_HEAD, border_style="yellow", header_style="bold white", padding=(0, 1))
     table.add_column("Direction", style="bold", width=20)
@@ -312,7 +320,11 @@ def display_direction_breakdown(stats):
 
 def display_recent_fills(fills, limit=25):
     """Display recent fills in a beautiful table"""
-    console.print(Panel(f"[bold cyan]RECENT TRADES (Last {min(len(fills), limit)})[/bold cyan]", border_style="cyan", padding=(0, 1)))
+    console.print(Panel(
+        f"📊 [bold white]RECENT TRADES (Last {min(len(fills), limit)})[/bold white]  [dim cyan]GET https://api.moondev.com/api/user/{{address}}/fills[/dim cyan]",
+        border_style="cyan",
+        padding=(0, 1)
+    ))
 
     table = Table(box=box.ROUNDED, border_style="cyan", header_style="bold magenta", padding=(0, 1))
     table.add_column("Time", style="dim", width=14)
@@ -398,7 +410,11 @@ def display_recent_fills(fills, limit=25):
 
 def display_win_streak_analysis(fills):
     """Analyze and display win/loss streaks"""
-    console.print(Panel("[bold green]WIN/LOSS STREAK ANALYSIS[/bold green]", border_style="green", padding=(0, 1)))
+    console.print(Panel(
+        "📊 [bold white]WIN/LOSS STREAK ANALYSIS[/bold white]  [dim cyan]GET https://api.moondev.com/api/user/{address}/fills[/dim cyan]",
+        border_style="green",
+        padding=(0, 1)
+    ))
 
     current_streak = 0
     max_win_streak = 0

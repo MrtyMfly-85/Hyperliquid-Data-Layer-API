@@ -109,7 +109,7 @@ def create_header_banner():
 def create_leaderboard_table(leaderboard_data):
     """Create the Top 10 Performers leaderboard table - Moon Dev style"""
     table = Table(
-        title="🏆 [bold yellow]TOP 10 SMART MONEY PERFORMERS[/bold yellow] 🏆",
+        title="🏆 [bold yellow]TOP 10 SMART MONEY PERFORMERS[/bold yellow] 🏆  [dim cyan]GET https://api.moondev.com/api/smart_money/leaderboard.json[/dim cyan]",
         box=box.ROUNDED,
         border_style="yellow",
         header_style="bold magenta",
@@ -201,7 +201,7 @@ def create_rankings_panel(rankings_data):
 
     panel = Panel(
         Align.center(content),
-        title="[bold cyan]📊 WALLET RANKINGS[/bold cyan]",
+        title="[bold cyan]📊 WALLET RANKINGS[/bold cyan]  [dim cyan]GET https://api.moondev.com/api/smart_money/rankings.json[/dim cyan]",
         border_style="cyan",
         box=box.ROUNDED,
         padding=(0, 1),
@@ -213,7 +213,7 @@ def create_rankings_panel(rankings_data):
 def create_signals_table(signals_10m, signals_1h, signals_24h):
     """Create trading signals table - Moon Dev style"""
     table = Table(
-        title="📡 [bold cyan]SMART MONEY TRADING SIGNALS[/bold cyan] 📡",
+        title="📡 [bold cyan]SMART MONEY TRADING SIGNALS[/bold cyan] 📡  [dim cyan]GET https://api.moondev.com/api/smart_money/signals_{timeframe}.json[/dim cyan]",
         box=box.ROUNDED,
         border_style="cyan",
         header_style="bold magenta",
@@ -345,7 +345,7 @@ def create_summary_stats(leaderboard_data, rankings_data):
 
     panel = Panel(
         Align.center(content),
-        title="[bold yellow]📊 SUMMARY STATISTICS[/bold yellow]",
+        title="[bold yellow]📊 SUMMARY STATISTICS[/bold yellow]  [dim cyan]GET https://api.moondev.com/api/smart_money/leaderboard.json[/dim cyan]",
         border_style="yellow",
         box=box.ROUNDED,
         padding=(0, 1),

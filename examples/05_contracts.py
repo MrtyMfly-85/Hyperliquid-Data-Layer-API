@@ -107,7 +107,7 @@ def create_stats_panel(contracts_data: dict) -> Panel:
         stats_text,
         box=box.ROUNDED,
         border_style="bright_yellow",
-        title="[bold bright_cyan]📈 Registry Stats[/bold bright_cyan]",
+        title="[bold bright_cyan]📈 Registry Stats[/bold bright_cyan]  [dim cyan]GET https://api.moondev.com/api/contracts.json[/dim cyan]",
         padding=(0, 1)
     )
 
@@ -142,6 +142,7 @@ def create_type_legend() -> Panel:
         legend_text,
         box=box.ROUNDED,
         border_style="dim white",
+        title="[bold white]Contract Types[/bold white]  [dim cyan]GET https://api.moondev.com/api/contracts.json[/dim cyan]",
         padding=(0, 1)
     )
 
@@ -239,7 +240,7 @@ def create_high_value_panel(contracts_data: dict) -> Panel:
         content,
         box=box.ROUNDED,
         border_style="bright_yellow",
-        title="[bold bright_yellow]⭐ HIGH VALUE CONTRACTS[/bold bright_yellow]",
+        title="[bold bright_yellow]⭐ HIGH VALUE CONTRACTS[/bold bright_yellow]  [dim cyan]GET https://api.moondev.com/api/contracts.json[/dim cyan]",
         padding=(0, 1)
     )
 

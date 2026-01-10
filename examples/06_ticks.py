@@ -130,7 +130,7 @@ def main():
         stats_content.append(f"{', '.join(SYMBOLS)}", style="bold white")
         console.print(Panel(
             stats_content,
-            title="[bold yellow]🌙 Moon Dev Collection Stats[/]",
+            title="[bold yellow]🌙 Moon Dev Collection Stats[/]  [dim cyan]GET https://api.moondev.com/api/ticks/stats.json[/dim cyan]",
             border_style="yellow",
             box=box.ROUNDED,
             padding=(0, 1)
@@ -138,7 +138,7 @@ def main():
 
     # ==================== LIVE PRICES TABLE ====================
     price_table = Table(
-        title="[bold magenta]🌙 LIVE PRICES[/]",
+        title="[bold magenta]🌙 LIVE PRICES[/]  [dim cyan]GET https://api.moondev.com/api/ticks/latest.json[/dim cyan]",
         box=box.ROUNDED,
         border_style="cyan",
         header_style="bold magenta",
@@ -190,7 +190,11 @@ def main():
     console.print(price_table)
 
     # ==================== RECENT TICKS TABLE ====================
-    console.print("[bold magenta]📊 RECENT TICK DATA[/]")
+    console.print(Panel(
+        "📊 [bold white]RECENT TICK DATA[/bold white]  [dim cyan]GET https://api.moondev.com/api/ticks/{symbol}_{timeframe}.json[/dim cyan]",
+        border_style="magenta",
+        padding=(0, 1)
+    ))
 
     for symbol in SYMBOLS:
         tick_response = api.get_ticks(symbol.lower(), "1h")

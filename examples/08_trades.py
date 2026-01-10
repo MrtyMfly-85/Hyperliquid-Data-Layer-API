@@ -160,10 +160,14 @@ def main():
     elif isinstance(large_trades_data, dict): large_trades = large_trades_data.get('trades', [])
     console.print(f"[green]  ✓ {len(large_trades) if large_trades else 0} large trades[/green]")
     print_stats_panels(trades, large_trades)
+    console.print(Panel(
+        "💹 [bold white]RECENT TRADES[/bold white]  [dim cyan]GET https://api.moondev.com/api/trades.json[/dim cyan]",
+        border_style="green", padding=(0, 1)))
     console.print(create_trade_table(trades, "💹 TOP 20 RECENT TRADES", limit=20, highlight_large=True))
     if large_trades:
-        console.print(Panel(f"[bold red]🔥 WHALE ALERT: {len(large_trades)} LARGE TRADES![/bold red]",
-            border_style="red", box=box.DOUBLE, padding=(0, 1)))
+        console.print(Panel(
+            f"🔥 [bold white]LARGE TRADES (>$100K)[/bold white]  [dim cyan]GET https://api.moondev.com/api/large_trades.json[/dim cyan]",
+            border_style="red", padding=(0, 1)))
         console.print(create_trade_table(large_trades, "🔥 LARGE TRADES (>$100K) - 24H", limit=None, highlight_large=True))
     else:
         console.print(Panel("[dim]No large trades (>$100k) in 24h[/dim]", border_style="dim", padding=(0, 1)))

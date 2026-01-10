@@ -60,7 +60,11 @@ def format_address(address):
 # ==================== BINANCE LIQUIDATION STATS ====================
 def display_binance_stats(api):
     """Display aggregated Binance liquidation statistics"""
-    console.print(Panel("📊 [bold yellow]BINANCE LIQUIDATION STATISTICS[/bold yellow] 📊", border_style="yellow", padding=(0, 1)))
+    console.print(Panel(
+        "📊 [bold yellow]BINANCE LIQUIDATION STATISTICS[/bold yellow]  [dim cyan]GET https://api.moondev.com/api/binance_liquidations/{timeframe}.json[/dim cyan]",
+        border_style="yellow",
+        padding=(0, 1)
+    ))
     try:
         stats = api.get_binance_liquidation_stats()
         if isinstance(stats, dict):
@@ -112,7 +116,11 @@ def display_binance_stats(api):
 # ==================== TIMEFRAME LIQUIDATIONS ====================
 def display_timeframe_liquidations(api):
     """Display Binance liquidations across different timeframes"""
-    console.print(Panel("⏰ [bold cyan]BINANCE LIQUIDATIONS BY TIMEFRAME[/bold cyan] ⏰", border_style="cyan", padding=(0, 1)))
+    console.print(Panel(
+        "⏰ [bold cyan]BINANCE LIQUIDATIONS BY TIMEFRAME[/bold cyan]  [dim cyan]GET https://api.moondev.com/api/binance_liquidations/{timeframe}.json[/dim cyan]",
+        border_style="cyan",
+        padding=(0, 1)
+    ))
 
     table = Table(box=box.DOUBLE_EDGE, border_style="yellow", header_style="bold magenta", padding=(0, 1))
     table.add_column("⏰ Timeframe", style="cyan", justify="center", width=12)
@@ -169,7 +177,11 @@ def display_timeframe_liquidations(api):
 # ==================== RECENT LIQUIDATIONS ====================
 def display_recent_liquidations(api):
     """Display most recent Binance liquidation events"""
-    console.print(Panel("🔥 [bold red]RECENT BINANCE LIQUIDATIONS (1H)[/bold red] 🔥", border_style="red", padding=(0, 1)))
+    console.print(Panel(
+        "🔥 [bold red]RECENT BINANCE LIQUIDATIONS (1H)[/bold red]  [dim cyan]GET https://api.moondev.com/api/binance_liquidations/1h.json[/dim cyan]",
+        border_style="red",
+        padding=(0, 1)
+    ))
 
     try:
         data = api.get_binance_liquidations("1h")

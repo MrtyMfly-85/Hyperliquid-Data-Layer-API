@@ -1,12 +1,17 @@
 """
 🌙 Moon Dev's Position Dashboard
 ================================
-Beautiful terminal dashboard for tracking large positions near liquidation ($200k+)
+Beautiful terminal dashboard for tracking large positions near liquidation
 
 Built with love by Moon Dev 🚀
 Using the Rich library for gorgeous terminal output
 
-Usage: python 02_positions.py
+Usage:
+  python 02_positions.py              # All symbols - top 50 across everything
+  python 02_positions.py BTC          # BTC positions only (1,085 positions, $1.9B)
+  python 02_positions.py ETH          # ETH positions only (620 positions, $2.7B)
+  python 02_positions.py HYPE         # HYPE positions only (386 positions, $528M)
+  python 02_positions.py --list       # Show all 148 available symbols
 """
 
 import sys
@@ -32,7 +37,7 @@ from rich.align import Align
 console = Console()
 
 
-def create_banner():
+def create_banner(symbol=None):
     """Create the Moon Dev branded header banner"""
     banner = """███╗   ███╗ ██████╗  ██████╗ ███╗   ██╗    ██████╗ ███████╗██╗   ██╗
 ████╗ ████║██╔═══██╗██╔═══██╗████╗  ██║    ██╔══██╗██╔════╝██║   ██║
@@ -40,10 +45,18 @@ def create_banner():
 ██║╚██╔╝██║██║   ██║██║   ██║██║╚██╗██║    ██║  ██║██╔══╝  ╚██╗ ██╔╝
 ██║ ╚═╝ ██║╚██████╔╝╚██████╔╝██║ ╚████║    ██████╔╝███████╗ ╚████╔╝
 ╚═╝     ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝    ╚═════╝ ╚══════╝  ╚═══╝"""
+
+    if symbol:
+        title = f"🌙 [bold magenta]{symbol.upper()} POSITION TRACKER[/bold magenta] 🌙"
+        subtitle = f"[dim]💰 {symbol.upper()} Positions Near Liquidation by Moon Dev 💰[/dim]"
+    else:
+        title = "🌙 [bold magenta]POSITION TRACKER[/bold magenta] 🌙"
+        subtitle = "[dim]💰 Large Positions Near Liquidation by Moon Dev 💰[/dim]"
+
     return Panel(
         Align.center(Text(banner, style="bold cyan")),
-        title="🌙 [bold magenta]POSITION TRACKER[/bold magenta] 🌙",
-        subtitle="[dim]💰 Large Positions Near Liquidation by Moon Dev 💰[/dim]",
+        title=title,
+        subtitle=subtitle,
         border_style="bright_cyan",
         box=box.DOUBLE_EDGE,
         padding=(0, 1)
@@ -198,7 +211,7 @@ def create_positions_table(positions_data):
     return table
 
 
-def create_stats_panel(positions_data):
+def create_stats_panel(positions_data, symbol=None):
     """Create a summary stats panel"""
     if not isinstance(positions_data, dict):
         return Panel("[dim]No data available[/dim]", title="📊 Position Statistics")
@@ -208,12 +221,19 @@ def create_stats_panel(positions_data):
     total_shorts = positions_data.get('total_shorts', 0)
     min_value = positions_data.get('min_position_value', 200000)
 
+    # Get total values from API response (for per-symbol endpoints)
+    total_long_value = positions_data.get('total_long_value', 0)
+    total_short_value = positions_data.get('total_short_value', 0)
+
     longs = positions_data.get('longs', [])
     shorts = positions_data.get('shorts', [])
     all_positions = longs + shorts
 
     # Calculate aggregated stats
-    total_value = sum(p.get('value', 0) for p in all_positions)
+    if total_long_value or total_short_value:
+        total_value = total_long_value + total_short_value
+    else:
+        total_value = sum(p.get('value', 0) for p in all_positions)
     total_pnl = sum(p.get('pnl', 0) for p in all_positions)
 
     # Count high risk positions
@@ -225,15 +245,21 @@ def create_stats_panel(positions_data):
     pnl_sign = "+" if total_pnl >= 0 else ""
     stats_lines = [
         f"[bold cyan]💰 Total Positions:[/bold cyan] [yellow]{total_positions:,}[/yellow]",
-        f"[bold cyan]💵 Position Value:[/bold cyan] [yellow]{format_usd(total_value)}[/yellow]",
-        f"[bold cyan]🔎 Min Size:[/bold cyan] [dim]{format_usd(min_value)}[/dim]",
-        f"[bold cyan]📊 Unrealized PnL:[/bold cyan] [{pnl_color}]{pnl_sign}{format_usd(total_pnl)}[/{pnl_color}]",
+        f"[bold cyan]💵 Total Value:[/bold cyan] [yellow]{format_usd(total_value)}[/yellow]",
+        f"[bold cyan]🟢 Long Value:[/bold cyan] [green]{format_usd(total_long_value)}[/green]" if total_long_value else f"[bold cyan]🔎 Min Size:[/bold cyan] [dim]{format_usd(min_value)}[/dim]",
+        f"[bold cyan]🔴 Short Value:[/bold cyan] [red]{format_usd(total_short_value)}[/red]" if total_short_value else f"[bold cyan]📊 Unrealized PnL:[/bold cyan] [{pnl_color}]{pnl_sign}{format_usd(total_pnl)}[/{pnl_color}]",
         f"[bold cyan]🟢 Longs:[/bold cyan] [green]{total_longs}[/green] | [bold cyan]🔴 Shorts:[/bold cyan] [red]{total_shorts}[/red]",
         f"[bold cyan]🚨 Critical (<2%):[/bold cyan] [bold red]{critical_count}[/bold red] | [bold cyan]⚠️ High (2-5%):[/bold cyan] [yellow]{high_risk_count}[/yellow]"
     ]
+
+    # Build API endpoint URL
+    if symbol:
+        api_url = f"GET https://api.moondev.com/api/positions/all.json → {symbol.upper()}"
+    else:
+        api_url = "GET https://api.moondev.com/api/positions.json"
+
     return Panel(
-        "\n".join(stats_lines),
-        title="📊 Position Statistics",
+        f"📊 [bold white]Position Statistics[/bold white]  [dim cyan]{api_url}[/dim cyan]\n\n" + "\n".join(stats_lines),
         border_style="bright_green",
         box=box.ROUNDED,
         padding=(0, 1)
@@ -303,9 +329,9 @@ def create_coin_distribution(positions_data):
             f"[green]L:{data['longs']:>2}[/green] [red]S:{data['shorts']:>2}[/red]"
         )
 
+    content = "\n".join(lines) if lines else "[dim]No data[/dim]"
     return Panel(
-        "\n".join(lines) if lines else "[dim]No data[/dim]",
-        title="🪙 Positions by Coin (Top Value)",
+        "🪙 [bold white]Positions by Coin (Top Value)[/bold white]  [dim cyan]GET https://api.moondev.com/api/positions.json[/dim cyan]\n\n" + content,
         border_style="bright_yellow",
         box=box.ROUNDED,
         padding=(0, 1)
@@ -354,8 +380,7 @@ def create_risk_analysis(positions_data):
         f"[bold green]✅ LOW (>20%):[/bold green] [green]{len(low)}[/green] positions"
     ]
     return Panel(
-        "\n".join(lines),
-        title="⚠️ Risk Analysis",
+        "⚠️ [bold white]Risk Analysis[/bold white]  [dim cyan]GET https://api.moondev.com/api/positions.json[/dim cyan]\n\n" + "\n".join(lines),
         border_style="bright_red",
         box=box.ROUNDED,
         padding=(0, 1)
@@ -390,20 +415,90 @@ def create_top_whales_panel(positions_data):
             f"[{pnl_color}]{pnl_sign}${pnl/1e3:.1f}k[/{pnl_color}]"
         )
     return Panel(
-        "\n".join(lines),
-        title="🐋 Top 5 Whales",
+        "🐋 [bold white]Top 5 Whales[/bold white]  [dim cyan]GET https://api.moondev.com/api/positions.json[/dim cyan]\n\n" + "\n".join(lines),
         border_style="bright_cyan",
         box=box.ROUNDED,
         padding=(0, 1)
     )
 
 
+def display_symbols_list(api):
+    """Display all available symbols from the all.json endpoint"""
+    console.print(Panel(
+        "📋 [bold white]Available Symbols[/bold white]  [dim cyan]GET https://api.moondev.com/api/positions/all.json[/dim cyan]",
+        border_style="cyan",
+        padding=(0, 1)
+    ))
+
+    all_data = api.get_all_positions()
+
+    if not isinstance(all_data, dict):
+        console.print("[red]Error fetching positions data[/red]")
+        return
+
+    symbols_data = all_data.get('symbols', {})
+
+    table = Table(
+        box=box.ROUNDED,
+        header_style="bold magenta",
+        border_style="cyan",
+        padding=(0, 1)
+    )
+
+    table.add_column("Symbol", style="cyan", justify="center")
+    table.add_column("Positions", style="yellow", justify="right")
+    table.add_column("Total Value", style="green", justify="right")
+    table.add_column("Longs", style="green", justify="right")
+    table.add_column("Shorts", style="red", justify="right")
+
+    # Build list and sort by total value
+    symbols_list = []
+    for symbol_name, sym_data in symbols_data.items():
+        total_long_val = sym_data.get('total_long_value', 0)
+        total_short_val = sym_data.get('total_short_value', 0)
+        total_val = total_long_val + total_short_val
+        symbols_list.append({
+            'symbol': symbol_name,
+            'total_positions': sym_data.get('total_positions', 0),
+            'total_value': total_val,
+            'total_longs': sym_data.get('total_longs', 0),
+            'total_shorts': sym_data.get('total_shorts', 0)
+        })
+
+    sorted_symbols = sorted(symbols_list, key=lambda x: x.get('total_value', 0), reverse=True)
+
+    for sym in sorted_symbols[:50]:  # Top 50 by value
+        table.add_row(
+            sym['symbol'],
+            f"{sym['total_positions']:,}",
+            format_usd(sym['total_value']),
+            str(sym['total_longs']),
+            str(sym['total_shorts'])
+        )
+
+    console.print(table)
+    console.print(f"\n[dim]Showing top 50 of {len(symbols_data)} total symbols. Use: python 02_positions.py SYMBOL[/dim]")
+
+
 def main():
     """Main function to run the position dashboard"""
-    console.print(create_banner())
+    # Parse command-line arguments
+    symbol = None
+    show_list = False
+
+    if len(sys.argv) > 1:
+        arg = sys.argv[1]
+        if arg.lower() == '--list' or arg.lower() == '-l':
+            show_list = True
+        else:
+            symbol = arg.upper()
+
+    console.print(create_banner(symbol))
+
     # Initialize API
     console.print("[bold cyan]🌙 Moon Dev: Initializing API...[/bold cyan]")
     api = MoonDevAPI()
+
     if not api.api_key:
         console.print(Panel(
             "[bold red]❌ No API key found![/bold red]\n"
@@ -414,23 +509,51 @@ def main():
             padding=(0, 1)
         ))
         return
+
     console.print("[green]✅ API Key loaded[/green]")
-    console.print("[bold magenta]📡 Fetching positions...[/bold magenta]")
-    positions_data = api.get_positions()
+
+    # Show symbols list if requested
+    if show_list:
+        display_symbols_list(api)
+        return
+
+    # Fetch positions data
+    if symbol:
+        console.print(f"[bold magenta]📡 Fetching {symbol} positions...[/bold magenta]")
+        all_data = api.get_all_positions()
+        # Filter to specific symbol client-side
+        if isinstance(all_data, dict) and 'symbols' in all_data:
+            symbol_data = all_data.get('symbols', {}).get(symbol.upper())
+            if symbol_data:
+                positions_data = symbol_data
+                positions_data['updated_at'] = all_data.get('updated_at', '')
+            else:
+                console.print(f"[red]Symbol {symbol} not found. Use --list to see available symbols.[/red]")
+                return
+        else:
+            positions_data = {}
+    else:
+        console.print("[bold magenta]📡 Fetching all positions...[/bold magenta]")
+        positions_data = api.get_positions()
+
     # Create and display stats panels side by side
-    stats_panel = create_stats_panel(positions_data)
+    stats_panel = create_stats_panel(positions_data, symbol)
     coin_panel = create_coin_distribution(positions_data)
     risk_panel = create_risk_analysis(positions_data)
     whale_panel = create_top_whales_panel(positions_data)
+
     console.print(Columns([stats_panel, coin_panel], equal=True))
     console.print(Columns([risk_panel, whale_panel], equal=True))
+
     # Create and display positions table
     positions_table = create_positions_table(positions_data)
     console.print(positions_table)
+
     # Footer with timestamp
     updated_at = positions_data.get('updated_at', '') if isinstance(positions_data, dict) else ''
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    console.print(f"[dim]─── 🌙 Moon Dev │ {timestamp} │ Data: {updated_at} │ moondev.com ───[/dim]")
+    symbol_info = f" │ Symbol: {symbol}" if symbol else ""
+    console.print(f"[dim]─── 🌙 Moon Dev │ {timestamp} │ Data: {updated_at}{symbol_info} │ moondev.com ───[/dim]")
 
 
 if __name__ == "__main__":

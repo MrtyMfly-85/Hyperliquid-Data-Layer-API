@@ -235,7 +235,7 @@ def create_summary_panel(positions_data, address):
 
     return Panel(
         "\n".join(lines),
-        title="Account Summary",
+        title="📊 [bold white]Account Summary[/bold white]  [dim cyan]GET https://api.moondev.com/api/user/{address}/positions[/dim cyan]",
         border_style="bright_green",
         box=box.ROUNDED,
         padding=(0, 1)
@@ -268,7 +268,7 @@ def create_coin_breakdown(positions_data):
         coins[coin]['pnl'] += pnl
 
     if not coins:
-        return Panel("[dim]No positions[/dim]", title="Coin Breakdown", border_style="bright_yellow")
+        return Panel("[dim]No positions[/dim]", title="📊 [bold white]Coin Breakdown[/bold white]  [dim cyan]GET https://api.moondev.com/api/user/{address}/positions[/dim cyan]", border_style="bright_yellow")
 
     sorted_coins = sorted(coins.items(), key=lambda x: x[1]['value'], reverse=True)
 
@@ -287,7 +287,7 @@ def create_coin_breakdown(positions_data):
 
     return Panel(
         "\n".join(lines) if lines else "[dim]No data[/dim]",
-        title="Coin Breakdown",
+        title="📊 [bold white]Coin Breakdown[/bold white]  [dim cyan]GET https://api.moondev.com/api/user/{address}/positions[/dim cyan]",
         border_style="bright_yellow",
         box=box.ROUNDED,
         padding=(0, 1)

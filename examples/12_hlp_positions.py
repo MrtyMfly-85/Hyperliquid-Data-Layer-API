@@ -139,7 +139,7 @@ def display_summary_panels(summary, exposure=None, trade_stats=None, strategies=
 
     panel1 = Panel(
         Align.center("\n".join(panel1_lines)),
-        title="[bold white]HLP OVERVIEW[/bold white]",
+        title="[bold white]HLP OVERVIEW[/bold white]  [dim cyan]GET https://api.moondev.com/api/hlp/positions[/dim cyan]",
         border_style="bright_yellow",
         box=box.DOUBLE,
         padding=(1, 2)
@@ -160,7 +160,7 @@ def display_summary_panels(summary, exposure=None, trade_stats=None, strategies=
 
     panel2 = Panel(
         Align.center("\n".join(panel2_lines)),
-        title="[bold white]NET EXPOSURE[/bold white]",
+        title="[bold white]NET EXPOSURE[/bold white]  [dim cyan]GET https://api.moondev.com/api/hlp/deltas[/dim cyan]",
         border_style=f"bright_{exposure_color}",
         box=box.DOUBLE,
         padding=(1, 2)
@@ -201,7 +201,7 @@ def display_summary_panels(summary, exposure=None, trade_stats=None, strategies=
 
     panel3 = Panel(
         "\n".join(panel3_lines),
-        title="[bold white]TRADES[/bold white]" if trade_stats else "[bold white]STRATEGIES[/bold white]",
+        title="[bold white]TRADES[/bold white]  [dim cyan]GET https://api.moondev.com/api/hlp/trades/stats[/dim cyan]" if trade_stats else "[bold white]STRATEGIES[/bold white]  [dim cyan]GET https://api.moondev.com/api/hlp/positions[/dim cyan]",
         border_style="bright_magenta",
         box=box.DOUBLE,
         padding=(1, 2)
@@ -267,7 +267,7 @@ def display_combined_positions(combined_positions):
 
     # Header with totals
     delta_color = "green" if net_delta >= 0 else "red"
-    header = f"[bold cyan]TOP 15 NET POSITIONS[/bold cyan] │ [green]Long: {format_usd(total_long)}[/green] │ [red]Short: {format_usd(total_short)}[/red] │ [{delta_color}]Delta: {'+' if net_delta >= 0 else ''}{format_usd(net_delta)}[/{delta_color}]"
+    header = f"[bold cyan]TOP 15 NET POSITIONS[/bold cyan]  [dim cyan]GET https://api.moondev.com/api/hlp/positions[/dim cyan] │ [green]Long: {format_usd(total_long)}[/green] │ [red]Short: {format_usd(total_short)}[/red] │ [{delta_color}]Delta: {'+' if net_delta >= 0 else ''}{format_usd(net_delta)}[/{delta_color}]"
     console.print(Panel(table, title=header, border_style="cyan", padding=(0, 0)))
 
 
@@ -307,7 +307,7 @@ def display_hlp_trades(trades, limit=15):
 
         table.add_row(time_str, strategy, coin, side_text, format_usd(value))
 
-    console.print(Panel(table, title=f"[bold yellow]RECENT TRADES[/bold yellow] ({min(len(trades), limit)})", border_style="yellow", padding=(0, 0)))
+    console.print(Panel(table, title=f"[bold yellow]RECENT TRADES[/bold yellow]  [dim cyan]GET https://api.moondev.com/api/hlp/trades[/dim cyan] ({min(len(trades), limit)})", border_style="yellow", padding=(0, 0)))
 
 
 def display_trade_stats(trade_stats):
@@ -345,7 +345,7 @@ def display_trade_stats(trade_stats):
                 vol = item.get('volume', 0)
                 strat_parts.append(f"[cyan]{strat}[/cyan] {format_usd(vol)}")
 
-    header = f"[bold]TRADES[/bold] │ {total_trades:,} trades │ {format_usd(total_volume)} volume │ {first} to {last}"
+    header = f"[bold]TRADE STATS[/bold]  [dim cyan]GET https://api.moondev.com/api/hlp/trades/stats[/dim cyan] │ {total_trades:,} trades │ {format_usd(total_volume)} volume │ {first} to {last}"
     content = " │ ".join(strat_parts) if strat_parts else "[dim]No strategy breakdown[/dim]"
 
     console.print(Panel(content, title=header, border_style="green", padding=(0, 1)))

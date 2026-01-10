@@ -88,7 +88,7 @@ def create_big_number(number, label, color="cyan"):
     big_text = f"╔════════════════════════╗\n║  {formatted:^20}  ║\n╚════════════════════════╝"
     return Panel(
         Align.center(Text(big_text, style=f"bold {color}")),
-        title=f"[bold {color}]{label}[/bold {color}]",
+        title=f"[bold {color}]{label}[/bold {color}]  [dim cyan]GET https://api.moondev.com/api/events.json[/dim cyan]",
         border_style=color,
         box=box.ROUNDED,
         padding=(0, 1)
@@ -109,7 +109,7 @@ def create_bar(value, max_value, width=30, color="cyan"):
 def create_events_by_type_table(events_by_type):
     """Create a beautiful table showing events by type with bar chart"""
     table = Table(
-        title="⚡ [bold cyan]Events by Type[/bold cyan] ⚡",
+        title="⚡ [bold cyan]Events by Type[/bold cyan]  [dim cyan]GET https://api.moondev.com/api/events.json[/dim cyan]",
         box=box.ROUNDED,
         border_style="cyan",
         header_style="bold magenta",
@@ -166,7 +166,7 @@ def create_stats_panel(stats, large_transfers, large_swaps):
         stats_text.append(f"{stats['events_per_minute']:.1f}", style="bold yellow")
     return Panel(
         stats_text,
-        title="📊 [bold yellow]Key Metrics[/bold yellow] 📊",
+        title="📊 [bold yellow]Key Metrics[/bold yellow]  [dim cyan]GET https://api.moondev.com/api/events.json[/dim cyan]",
         border_style="yellow",
         box=box.ROUNDED,
         padding=(0, 1)
@@ -176,7 +176,7 @@ def create_stats_panel(stats, large_transfers, large_swaps):
 def create_recent_events_table(events_list):
     """Create a table of recent events"""
     table = Table(
-        title="🔥 [bold red]Recent Events[/bold red] 🔥",
+        title="🔥 [bold red]Recent Events[/bold red]  [dim cyan]GET https://api.moondev.com/api/events.json[/dim cyan]",
         box=box.ROUNDED,
         border_style="red",
         header_style="bold yellow",
@@ -243,7 +243,7 @@ def create_event_type_bars(events_by_type):
     content = "\n".join(lines)
     return Panel(
         content,
-        title="📊 [bold blue]Event Type Distribution[/bold blue] 📊",
+        title="📊 [bold blue]Event Type Distribution[/bold blue]  [dim cyan]GET https://api.moondev.com/api/events.json[/dim cyan]",
         border_style="blue",
         box=box.ROUNDED,
         padding=(0, 1)

@@ -90,7 +90,7 @@ def get_exchange_style(exchange):
 def display_combined_stats(api):
     """Display combined stats across all exchanges"""
     console.print(Panel(
-        "📊 [bold white]COMBINED LIQUIDATION STATS (24H)[/bold white] 📊",
+        "📊 [bold white]COMBINED STATS (24H)[/bold white]  [dim cyan]GET https://api.moondev.com/api/all_liquidations/stats.json[/dim cyan]",
         border_style="bright_white",
         padding=(0, 1)
     ))
@@ -141,7 +141,7 @@ def display_combined_stats(api):
 def display_exchange_breakdown(api):
     """Display breakdown by exchange"""
     console.print(Panel(
-        "🏦 [bold cyan]BREAKDOWN BY EXCHANGE (24H)[/bold cyan] 🏦",
+        "🏦 [bold cyan]EXCHANGE BREAKDOWN (24H)[/bold cyan]  [dim cyan]GET https://api.moondev.com/api/all_liquidations/stats.json[/dim cyan]",
         border_style="cyan",
         padding=(0, 1)
     ))
@@ -221,7 +221,7 @@ def display_exchange_breakdown(api):
 def display_timeframe_comparison(api):
     """Display liquidations across different timeframes"""
     console.print(Panel(
-        "⏰ [bold yellow]LIQUIDATIONS BY TIMEFRAME[/bold yellow] ⏰",
+        "⏰ [bold yellow]LIQUIDATIONS BY TIMEFRAME[/bold yellow]  [dim cyan]GET https://api.moondev.com/api/all_liquidations/{timeframe}.json[/dim cyan]",
         border_style="yellow",
         padding=(0, 1)
     ))
@@ -299,7 +299,7 @@ def display_timeframe_comparison(api):
 def display_top_liquidations(api):
     """Display top liquidations from all exchanges combined"""
     console.print(Panel(
-        "🏆 [bold red]TOP LIQUIDATIONS (ALL EXCHANGES - 1H)[/bold red] 🏆",
+        "🏆 [bold red]TOP LIQUIDATIONS (1H)[/bold red]  [dim cyan]GET https://api.moondev.com/api/all_liquidations/1h.json[/dim cyan]",
         border_style="red",
         padding=(0, 1)
     ))
@@ -401,7 +401,7 @@ def display_top_liquidations(api):
 def display_coin_breakdown(api):
     """Display liquidations broken down by coin across all exchanges"""
     console.print(Panel(
-        "🪙 [bold magenta]LIQUIDATIONS BY COIN (24H - ALL EXCHANGES)[/bold magenta] 🪙",
+        "🪙 [bold magenta]LIQUIDATIONS BY COIN (24H)[/bold magenta]  [dim cyan]GET https://api.moondev.com/api/all_liquidations/stats.json[/dim cyan]",
         border_style="magenta",
         padding=(0, 1)
     ))
@@ -479,7 +479,7 @@ def display_coin_breakdown(api):
 def display_exchange_status(api):
     """Display connection status for each exchange"""
     console.print(Panel(
-        "📡 [bold green]EXCHANGE STATUS[/bold green] 📡",
+        "📡 [bold green]EXCHANGE STATUS[/bold green]  [dim cyan]GET https://api.moondev.com/api/all_liquidations/10m.json[/dim cyan]",
         border_style="green",
         padding=(0, 1)
     ))

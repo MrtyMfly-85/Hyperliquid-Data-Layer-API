@@ -9,7 +9,7 @@ Each file in this folder is a standalone Python script that demonstrates one sec
 | File | API Section | What You'll See |
 |------|-------------|-----------------|
 | `01_liquidations.py` | Hyperliquid Liqs | Real-time liquidation heatmaps, top liqs, long/short breakdowns |
-| `02_positions.py` | Large Positions | Whale positions near liquidation, risk analysis |
+| `02_positions.py` | Large Positions | Whale positions near liquidation, per-symbol support (148 symbols!) |
 | `03_whales.py` | Whale Activity | Whale addresses, recent trades, smart money moves |
 | `04_events.py` | Blockchain Events | Live event stream, transfers, swaps, deposits |
 | `05_contracts.py` | Contract Registry | High-value contracts, activity tracking |
@@ -22,6 +22,8 @@ Each file in this folder is a standalone Python script that demonstrates one sec
 | `12_hlp_positions.py` | HLP Dashboard | All 7 HLP strategies, trades, liquidators, deltas |
 | `13_binance_liquidations.py` | Binance Liqs | Binance Futures liquidations, stats, top events |
 | `14_multi_liquidations.py` | Multi-Exchange | Combined liqs from Hyperliquid, Binance, Bybit, OKX |
+| `15_buyers.py` | Buyer Watcher | $5k+ buyers on HYPE/SOL/XRP/ETH (buyers only!) |
+| `16_depositors.py` | Depositors | All Hyperliquid depositors - every address that bridged |
 
 ---
 
@@ -99,8 +101,11 @@ response = requests.get('https://api.moondev.com/api/trades.json?api_key=YOUR_AP
 | `GET /health` | Service health check (no auth required) |
 | `GET /api/liquidations/{timeframe}.json` | Hyperliquid liquidation data (10m, 1h, 4h, 12h, 24h, 2d, 7d, 14d, 30d) |
 | `GET /api/liquidations/stats.json` | Aggregated Hyperliquid liquidation statistics |
-| `GET /api/positions.json` | Large positions near liquidation ($200k+) |
-| `GET /api/whales.json` | Recent whale trades ($25k+) |
+| `GET /api/positions.json` | Top 50 longs/shorts across ALL symbols (updates every 1s) |
+| `GET /api/positions/all.json` | All 148 symbols with top 50 positions each (500KB, updates every 60s) |
+| `GET /api/whales.json` | Recent whale trades ($25k+, buys & sells) |
+| `GET /api/buyers.json` | Recent buyers only ($5k+, HYPE/SOL/XRP/ETH) |
+| `GET /api/depositors.json` | All Hyperliquid depositors (canonical address list) |
 | `GET /api/whale_addresses.txt` | Plain text whale address list |
 | `GET /api/events.json` | Real-time blockchain events |
 | `GET /api/contracts.json` | Contract registry with metadata |
@@ -192,8 +197,13 @@ bybit_liqs = api.get_bybit_liquidations("1h")        # Bybit only
 okx_liqs = api.get_okx_liquidations("1h")            # OKX only
 
 # === POSITIONS & WHALES ===
-positions = api.get_positions()              # Large positions near liquidation
-whales = api.get_whales()                    # Recent whale trades
+positions = api.get_positions()              # Top 50 positions across ALL symbols (fast, 1s updates)
+all_positions = api.get_all_positions()      # All 148 symbols (500KB, 60s updates)
+btc_data = all_positions['symbols']['BTC']   # Filter to BTC ($1.9B)
+hype_data = all_positions['symbols']['HYPE'] # Filter to HYPE ($528M)
+whales = api.get_whales()                    # Recent whale trades ($25k+, buys & sells)
+buyers = api.get_buyers()                    # Recent buyers only ($5k+, HYPE/SOL/XRP/ETH)
+depositors = api.get_depositors()            # All Hyperliquid depositors (canonical list)
 whale_addrs = api.get_whale_addresses()      # List of whale addresses
 
 # === EVENTS & CONTRACTS ===
@@ -235,6 +245,32 @@ hlp_deltas = api.get_hlp_deltas(hours=24)            # Net exposure changes
 ---
 
 ## Example Scripts Deep Dive
+
+### 02_positions.py - Per-Symbol Position Dashboard
+
+Track whale positions near liquidation for any of the 148 symbols on Hyperliquid:
+
+```bash
+# All symbols - top 50 across everything (fast, 1s updates)
+python examples/02_positions.py
+
+# Per-symbol filtering (uses /api/positions/all.json, filters client-side)
+python examples/02_positions.py BTC          # 1,085 BTC positions ($1.9B total)
+python examples/02_positions.py ETH          # 620 ETH positions ($2.7B total)
+python examples/02_positions.py HYPE         # 386 HYPE positions ($528M total)
+python examples/02_positions.py SOL          # 326 SOL positions ($469M total)
+python examples/02_positions.py FARTCOIN     # 92 FARTCOIN positions ($56M total)
+
+# List all 148 available symbols
+python examples/02_positions.py --list
+```
+
+**Features:**
+- Position statistics (total value, long/short breakdown)
+- Top 50 positions sorted by liquidation distance (highest risk first)
+- Risk analysis (critical <2%, high 2-5%, medium 5-10%)
+- Top 5 whale positions by value
+- Per-symbol filtering for any of 148 symbols (one API call gets all data)
 
 ### 11_user_fills.py - Trade History Dashboard
 

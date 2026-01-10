@@ -10,7 +10,8 @@ CORE:
 - /health                               - Service health check (no auth)
 - /api/liquidations/{timeframe}.json    - Liquidation data (10m, 1h, 4h, 12h, 24h, 2d, 7d, 14d, 30d)
 - /api/liquidations/stats.json          - Aggregated liquidation stats
-- /api/positions.json                   - Large positions near liquidation ($200k+)
+- /api/positions.json                   - Top 50 longs/shorts across ALL symbols (updates every 1s)
+- /api/positions/all.json               - All 148 symbols with top 50 positions each (500KB, updates every 60s)
 - /api/whales.json                      - Recent whale trades ($25k+)
 - /api/whale_addresses.txt              - Plain text whale address list
 - /api/events.json                      - Real-time blockchain events
@@ -40,13 +41,13 @@ SMART MONEY:
 - /api/smart_money/signals_1h.json      - Trading signals (1 hour)
 - /api/smart_money/signals_24h.json     - Trading signals (24 hour)
 
-BINANCE LIQUIDATIONS:
-- /api/binance_liquidations/stats.json  - Summary stats (24h volume, counts)
-- /api/binance_liquidations/10m.json    - Last 10 minutes
-- /api/binance_liquidations/1h.json     - Last hour
-- /api/binance_liquidations/24h.json    - Last 24 hours
-- /api/binance_liquidations/7d.json     - Last 7 days
-- /api/binance_liquidations/30d.json    - Last 30 days
+MULTI-EXCHANGE LIQUIDATIONS:
+- /api/all_liquidations/{timeframe}.json     - Combined liquidations from ALL exchanges
+- /api/all_liquidations/stats.json           - Combined stats across all exchanges
+- /api/binance_liquidations/{timeframe}.json - Binance Futures liquidations
+- /api/bybit_liquidations/{timeframe}.json   - Bybit liquidations
+- /api/okx_liquidations/{timeframe}.json     - OKX liquidations
+  (timeframes: 10m, 1h, 4h, 12h, 24h, 2d, 7d, 14d, 30d)
 
 HYPERLIQUID USER DATA:
 - get_user_positions(address)           - Get positions via Hyperliquid API (direct)
@@ -96,7 +97,6 @@ class MoonDevAPI:
         url = f"{self.base_url}{endpoint}"
         headers = self.headers if auth_required else {}
 
-        print(f"📡 Moon Dev: GET {endpoint}")
         response = self.session.get(url, headers=headers, timeout=30)
         response.raise_for_status()
         return response
@@ -120,8 +120,17 @@ class MoonDevAPI:
 
     # ==================== POSITIONS ====================
     def get_positions(self):
-        """Get large positions near liquidation ($200k+)"""
+        """Get large positions near liquidation ($200k+) - top 50 across ALL symbols"""
         response = self._get("/api/positions.json")
+        return response.json()
+
+    def get_all_positions(self):
+        """Get ALL positions for all 148 symbols - top 50 longs/shorts per symbol
+
+        Returns dict with symbols key containing all symbol data.
+        Access specific symbol: data['symbols']['BTC'], data['symbols']['HYPE'], etc.
+        """
+        response = self._get("/api/positions/all.json")
         return response.json()
 
     # ==================== WHALES ====================
@@ -135,6 +144,16 @@ class MoonDevAPI:
         response = self._get("/api/whale_addresses.txt")
         addresses = response.text.strip().split('\n')
         return [addr.strip() for addr in addresses if addr.strip()]
+
+    def get_buyers(self):
+        """Get recent $5k+ buyers on HYPE/SOL/XRP/ETH (buyers only, no sells)"""
+        response = self._get("/api/buyers.json")
+        return response.json()
+
+    def get_depositors(self):
+        """Get all Hyperliquid depositors - canonical list of every address that bridged USDC"""
+        response = self._get("/api/depositors.json")
+        return response.json()
 
     # ==================== EVENTS ====================
     def get_events(self):
@@ -424,35 +443,62 @@ class MoonDevAPI:
         response = self._get(f"/api/smart_money/signals_{timeframe}.json")
         return response.json()
 
-    # ==================== BINANCE LIQUIDATIONS ====================
-    def get_binance_liquidations(self, timeframe="1h"):
+    # ==================== MULTI-EXCHANGE LIQUIDATIONS ====================
+    def get_all_liquidations(self, timeframe="1h"):
         """
-        Get Binance liquidation data for specified timeframe.
+        Get COMBINED liquidation data from ALL exchanges (Hyperliquid, Binance, Bybit, OKX).
 
         Args:
-            timeframe: 10m, 1h, 24h, 7d, 30d
+            timeframe: 10m, 1h, 4h, 12h, 24h, 2d, 7d, 14d, 30d
 
         Returns:
-            dict with liquidation events from Binance Futures
+            dict with liquidation events from all exchanges, sorted by USD value
+        """
+        response = self._get(f"/api/all_liquidations/{timeframe}.json")
+        return response.json()
 
-        Note: Binance liquidations are separate from Hyperliquid liquidations.
-              Use get_liquidations() for Hyperliquid data.
+    def get_all_liquidation_stats(self):
+        """
+        Get combined liquidation stats across ALL exchanges.
+
+        Returns:
+            dict with:
+                - total_count: Total liquidations across all exchanges
+                - total_volume: Combined USD volume
+                - by_exchange: Breakdown by exchange (hyperliquid, binance, bybit, okx)
+                - by_side: Long vs short breakdown
+        """
+        response = self._get("/api/all_liquidations/stats.json")
+        return response.json()
+
+    def get_binance_liquidations(self, timeframe="1h"):
+        """
+        Get Binance Futures liquidation data.
+
+        Args:
+            timeframe: 10m, 1h, 4h, 12h, 24h, 2d, 7d, 14d, 30d
         """
         response = self._get(f"/api/binance_liquidations/{timeframe}.json")
         return response.json()
 
-    def get_binance_liquidation_stats(self):
+    def get_bybit_liquidations(self, timeframe="1h"):
         """
-        Get Binance liquidation summary stats (24h volume, counts, etc.)
+        Get Bybit liquidation data.
 
-        Returns:
-            dict with:
-                - total_count: Number of liquidations
-                - total_volume: USD volume liquidated
-                - long_count / short_count: Breakdown by side
-                - top_coins: Most liquidated assets
+        Args:
+            timeframe: 10m, 1h, 4h, 12h, 24h, 2d, 7d, 14d, 30d
         """
-        response = self._get("/api/binance_liquidations/stats.json")
+        response = self._get(f"/api/bybit_liquidations/{timeframe}.json")
+        return response.json()
+
+    def get_okx_liquidations(self, timeframe="1h"):
+        """
+        Get OKX liquidation data.
+
+        Args:
+            timeframe: 10m, 1h, 4h, 12h, 24h, 2d, 7d, 14d, 30d
+        """
+        response = self._get(f"/api/okx_liquidations/{timeframe}.json")
         return response.json()
 
 
@@ -827,43 +873,47 @@ def test_all():
 
     print()
 
-    # ==================== 13. BINANCE LIQUIDATIONS ====================
+    # ==================== 13. MULTI-EXCHANGE LIQUIDATIONS ====================
     print("=" * 60)
-    print("🔥 13. BINANCE LIQUIDATIONS")
+    print("🔥 13. MULTI-EXCHANGE LIQUIDATIONS")
     print("=" * 60)
 
-    # Binance Liquidation Stats
+    # Combined All Exchange Stats
     try:
-        stats = api.get_binance_liquidation_stats()
+        stats = api.get_all_liquidation_stats()
         if isinstance(stats, dict):
             total_count = stats.get('total_count', stats.get('count', 0))
             total_volume = stats.get('total_volume', stats.get('total_value_usd', 0))
-            long_count = stats.get('long_count', 0)
-            short_count = stats.get('short_count', 0)
-            print(f"✅ Binance Liquidation Stats:")
+            print(f"✅ Combined All Exchanges:")
             print(f"   Total Count: {total_count:,}")
             print(f"   Total Volume: ${total_volume:,.0f}")
-            if long_count or short_count:
-                print(f"   Longs: {long_count:,} | Shorts: {short_count:,}")
+            by_exchange = stats.get('by_exchange', {})
+            if by_exchange:
+                print(f"   By Exchange:")
+                for ex, ex_stats in by_exchange.items():
+                    if isinstance(ex_stats, dict):
+                        ex_count = ex_stats.get('count', 0)
+                        ex_vol = ex_stats.get('volume', 0)
+                        print(f"      {ex}: {ex_count:,} liqs | ${ex_vol:,.0f}")
     except Exception as e:
-        print(f"⚠️  Binance liquidation stats: {e}")
+        print(f"⚠️  All liquidation stats: {e}")
 
-    # Binance Liquidations by timeframe (just show 1h as example)
-    # Other timeframes available: 10m, 24h, 7d, 30d
-    try:
-        data = api.get_binance_liquidations("1h")
-        if isinstance(data, list):
-            print(f"✅ Binance 1h Liquidations: {len(data)} events")
-            for liq in data[:3]:
-                symbol = liq.get('symbol', liq.get('coin', '?'))
-                side = liq.get('side', '?')
-                value = liq.get('value', liq.get('usd_value', liq.get('quantity', 0)))
-                print(f"   {symbol} {side} ${value:,.0f}" if isinstance(value, (int, float)) else f"   {liq}")
-        elif isinstance(data, dict):
-            liq_list = data.get('liquidations', data.get('data', []))
-            print(f"✅ Binance 1h Liquidations: {len(liq_list)} events")
-    except Exception as e:
-        print(f"⚠️  Binance 1h liquidations: {e}")
+    # Per-exchange liquidations (1h sample)
+    exchanges = [
+        ("Binance", api.get_binance_liquidations),
+        ("Bybit", api.get_bybit_liquidations),
+        ("OKX", api.get_okx_liquidations),
+    ]
+    for name, func in exchanges:
+        try:
+            data = func("1h")
+            if isinstance(data, list):
+                print(f"✅ {name} 1h: {len(data)} liquidations")
+            elif isinstance(data, dict):
+                liq_list = data.get('liquidations', data.get('data', []))
+                print(f"✅ {name} 1h: {len(liq_list)} liquidations")
+        except Exception as e:
+            print(f"⚠️  {name} 1h: {e}")
 
     print()
 
